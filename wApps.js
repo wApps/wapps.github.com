@@ -11,11 +11,15 @@ wApps={
 
 	bodies:{
 		"myApps":{
-			html:'1',
+			html:'Apps you selected from the AppStore ...',
 			Div:{} // where the DOM element will be set later 
 		},
 		"Store":{
-			html:'222222',
+			html:'Retrieving list of Apps from the manifest ...',
+			Div:{}
+		},
+		"People":{
+			html:'Retrieving list of people authoring Apps ...',
 			Div:{}
 		},
 		"About":{
@@ -62,7 +66,7 @@ wApps={
 			this.bodies[bodyNames[i]].A = $('<a href="#" id="wAppsBodiesA_'+bodyNames[i]+'">').appendTo($('<li id="wAppsBodiesLi_'+bodyNames[i]+'">').appendTo(navUl)).html(bodyNames[i])[0];
 		}
 		// assemble body
-		var wAppsBody = $('<div>').appendTo(container);
+		var wAppsBody = $('<div id="wAppsBody">').appendTo(container);
 		for(var i in bodyNames){ // associate display of divs with header tags
 			this.bodies[bodyNames[i]].Div = $('<div id="wAppsBodiesDiv_'+bodyNames[i]+'">').appendTo(wAppsBody).html(this.bodies[bodyNames[i]].html)[0];
 			if(i>0){$(this.bodies[bodyNames[i]].Div).hide()}
@@ -80,7 +84,11 @@ wApps={
 		console.log(buildTarget)
 	},
 
-	manifest:[],
+	manifest:{ // remember to fill these in the manifest file
+		apps:[],
+		authors:[],
+		brand:{pic:'',url:''}
+	}, 
 
 	buildStore:function(){
 		this.load('manifest.json',function(){
