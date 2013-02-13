@@ -1,8 +1,8 @@
 
 wApps.manifest.apps.push(
     {
-    "name": "simple login",
-    "description": "Very simple login using jmat's toolbox",
+    "name": "Simple S3DB login",
+    "description": "Very simple login into S3DB using jmat's toolbox",
     "url": "https://raw.github.com/agrueneberg/TCGA.rppa/master/homepage",
     "namespace":'jmat',
     buildUI:function(id){
@@ -52,7 +52,7 @@ wApps.manifest.bodies={
         Div:{}
     },
     "About":{
-        html:'This is an experiment in loosening the architecture of a webApp store to achieve a deeper integration between autonomously developed components.',
+        html:'<h1>wApps</h1>This is an experiment in loosening the architecture of a webApp store to achieve a deeper integration between autonomously developed components.',
         Div:{}
     }
 };

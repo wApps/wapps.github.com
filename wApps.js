@@ -40,7 +40,7 @@ wApps={
 		var container = $('<div class="container">').appendTo(buildTarget);
 		var navHead = $('<div class="navbar navbar-inverse">').appendTo(container);
 		var innerHead = $('<div class="navbar-inner">').appendTo(navHead);
-		var brand = $('<a class="brand" href="'+this.manifest.brand.url+'"><img id="wBrand" src="'+this.manifest.brand.pic+'" width=20></a>').appendTo(innerHead);
+		var brand = $('<a class="brand" href="'+this.manifest.brand.url+'"><img id="wBrand" src="'+this.manifest.brand.pic+'" width="20"></a>').appendTo(innerHead);
 		var navUl = $('<ul class="nav">').appendTo(innerHead);
 		var bodyNames = Object.getOwnPropertyNames(this.manifest.bodies);
 		for(var i in bodyNames){ // create header tabs
@@ -60,9 +60,11 @@ wApps={
 			}
 		}
 		// Assemble Footer
-		var foot = $('<div if="wAppFoot"><hr><small><i>&nbsp;@ w.Apps: <span id="wAppsFooter"></i></span></small></div>').appendTo(container);
+		var foot = $('<div if="wAppFoot"><hr><small><i>&nbsp;@ <a href="https://github.com/wApps/wapps.github.com" target=_blank>wApps</a>: <span id="wAppsFooter"></i></span></small></div>').appendTo(container);
 		setInterval(function(){$('#wAppsFooter').html(Date())},1000);
 		console.log(buildTarget)
+		// build app Store
+		$('#wAppsBodiesA_Store').click(wApps.buildStore)
 	},
 	buildUI:function(id,manifest){
 		if(!manifest){manifest='manifest.js'}
@@ -71,17 +73,43 @@ wApps={
 		})
 	},
 
-	manifest:{ // these will be filled in from teh manifest
+	buildStore:function(){
+		var div = wApps.manifest.bodies.Store.Div;
+		div.innerHTML=''; // clear div
+		// Add search input
+		var searchApps = $('<input type="text" placeholder="search for wApps">').appendTo(div);
+		//$('<hr>').appendTo(div);
+		// list Apps
+		var apps = wApps.manifest.apps;
+		var appDiv=[];
+		if(!wApps.manifest.checkedApps){
+			wApps.manifest.checkedApps=[];
+			for(var i in apps){
+				wApps.manifest.checkedApps[i]=false;
+			}
+		};
+		for(var i in apps){
+			appDiv[i] = $('<div id="wApp_"'+i+'>').appendTo(div);
+			appDiv[i].html('<input type="checkbox" id="wAppCheckBox_'+i+'"> '+i+') <a href="'+wApps.manifest.apps[i].name+'">'+wApps.manifest.apps[i].name+'</a><p><i>'+wApps.manifest.apps[i].description+'</i></p>');
+			if(wApps.manifest.checkedApps[i]){$('#wAppCheckBox_'+i)[0].checked=true};
+			$('#wAppCheckBox_'+i).click(function(){wApps.getChecked(this)});
+		}
+		//this.load('manifest.json',function(){
+			console.log(9);
+		//})
+	},
+
+	getChecked:function(that){
+		var i = (that.id).match(/wAppCheckBox_(.+)/)[1];
+		wApps.manifest.checkedApps[i]=$(that).is(':checked');
+		console.log(wApps.manifest.checkedApps);
+	},
+
+	manifest:{ // these will be filled in from the manifest
 		apps:[],
 		authors:[],
 		bodies:{},
 		brand:{pic:'',url:''}
-	}, 
-
-	buildStore:function(){
-		//this.load('manifest.json',function(){
-			console.log(9)
-		//})
 	}
 }
 
