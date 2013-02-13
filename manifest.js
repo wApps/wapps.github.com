@@ -1,14 +1,24 @@
 
 wApps.manifest.apps.push(
     {
-    "name": "Simple S3DB login",
-    "description": "Very simple login into S3DB using jmat's toolbox",
-    "url": "https://raw.github.com/agrueneberg/TCGA.rppa/master/homepage",
+    "name": "Login@ S3DB.UAB",
+    "description": "<p>Very simple login into UAB's S3DB cloud deployment using jmat's toolbox.</p><p>The login credentials will be stored at wApps.s3db.info.</p>",
+    "url": "https://code.google.com/p/jmat/", // home page of App
     "namespace":'jmat',
     buildUI:function(id){
-        this.require('http://jmat.github.com/jmat.js',
+        this.require('http://localhost:8888/jmat/jmat.js',
             function(){
-                jmat.s3db.login(id)
+                $('<div id="'+id+'_s3dbLogin">').appendTo($('#'+id));// create login div
+                var url = 'https://uab.s3db.org/s3db'
+                jmat.s3db.UI.login(
+                    url,
+                    function(){
+                        wApps.s3db=jmat.s3db.info;
+                        console.log('s3db login successful :-)');
+                        $('<div>Logged in at '+url+': <p>'+JSON.stringify(wApps.s3db.uid)+'</p>').appendTo($('#'+id));
+                    },
+                    id+'_s3dbLogin'
+                )
                 //console.log(id);
             });
         }
@@ -20,7 +30,7 @@ wApps.manifest.apps.push(
     "url": "http://v1.qmachine.org",
     "namespace":'QM',
     buildUI:function(id){
-        this.require('https://v1.qmachine.org/q.js',
+        this.require('', // script needed to volunteer compute cycles to QM
             function(){
                 $('#'+id).html("<h1>QMachine</h1>Volunteering to Sean's QMachine will go here, Sean, can you please change the manifest accordingly?");
             });
@@ -37,6 +47,8 @@ wApps.manifest.brand={
     pic:'brand.png',
     url:'http://en.wikipedia.org/wiki/s3db'
 };
+
+wApps.manifest.checkedApps=[];
 
 wApps.manifest.bodies={
     "myApps":{
@@ -58,7 +70,7 @@ wApps.manifest.bodies={
 };
 
 
-
+for(var i in wApps.manifest.apps){wApps.manifest.apps[i].require=wApps.load}
 
 
 
