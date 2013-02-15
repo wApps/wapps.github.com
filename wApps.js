@@ -42,25 +42,25 @@ wApps={
 				buildTarget=$('#'+id);
 		}
 		// Assemble Head
-		var container = $('<div class="container">').appendTo(buildTarget);
-		var navHead = $('<div class="navbar navbar-inverse">').appendTo(container);
+		var container = $('<div class="container" id="wAppsContainer">').appendTo(buildTarget);
+		var navHead = $('<div class="navbar navbar-inverse">').appendTo(container); // add navbar-inverse to the class to invert colors
 		var innerHead = $('<div class="navbar-inner">').appendTo(navHead);
 		var brand = $('<a class="brand" href="'+this.manifest.brand.url+'"><img id="wBrand" src="'+this.manifest.brand.pic+'" width="20"></a>').appendTo(innerHead);
 		var navUl = $('<ul class="nav">').appendTo(innerHead);
-		var bodyNames = Object.getOwnPropertyNames(this.manifest.bodies);
+		var bodyNames = Object.getOwnPropertyNames(this.manifest.tabs);
 		for(var i in bodyNames){ // create header tabs
-			this.manifest.bodies[bodyNames[i]].A = $('<a href="#" id="wAppsBodiesA_'+bodyNames[i]+'">').appendTo($('<li id="wAppsBodiesLi_'+bodyNames[i]+'">').appendTo(navUl)).html(bodyNames[i])[0];
+			this.manifest.tabs[bodyNames[i]].A = $('<a href="#" id="wAppsTabsA_'+bodyNames[i]+'">').appendTo($('<li id="wAppsTabsLi_'+bodyNames[i]+'">').appendTo(navUl)).html(bodyNames[i])[0];
 		}
 		// assemble body
 		var wAppsBody = $('<div id="wAppsBody">').appendTo(container);
 		for(var i in bodyNames){ // associate display of divs with header tags
-			this.manifest.bodies[bodyNames[i]].Div = $('<div id="wAppsBodiesDiv_'+bodyNames[i]+'">').appendTo(wAppsBody).html(this.manifest.bodies[bodyNames[i]].html)[0];
-			if(i>0){$(this.manifest.bodies[bodyNames[i]].Div).hide()}
-			this.manifest.bodies[bodyNames[i]].A.onclick=function(evt){
-				var bodyNames = Object.getOwnPropertyNames(wApps.manifest.bodies);
+			this.manifest.tabs[bodyNames[i]].Div = $('<div id="wAppsTabsDiv_'+bodyNames[i]+'">').appendTo(wAppsBody).html(this.manifest.tabs[bodyNames[i]].html)[0];
+			if(i>0){$(this.manifest.tabs[bodyNames[i]].Div).hide()}
+			this.manifest.tabs[bodyNames[i]].A.onclick=function(evt){
+				var bodyNames = Object.getOwnPropertyNames(wApps.manifest.tabs);
 				for(var i=0 in bodyNames){
-					var d = $('#wAppsBodiesDiv_'+bodyNames[i]);
-					if(this.id=='wAppsBodiesA_'+bodyNames[i]){$(d).show()}else{$(d).hide()}
+					var d = $('#wAppsTabsDiv_'+bodyNames[i]);
+					if(this.id=='wAppsTabsA_'+bodyNames[i]){$(d).show()}else{$(d).hide()}
 				}
 			}
 		}
@@ -71,17 +71,65 @@ wApps={
 		// build app Store
 		wApps.buildStore();
 		wApps.buildApps();
-		//$('#wAppsBodiesA_Store').click(wApps.buildStore)
+		wApps.loadMyApps();
+		//$('#wAppsTabsA_Store').click(wApps.buildStore)
 	},
+
+	find:function(x,xx){ // find x in array xx
+		var y = [];
+		for(var i in xx){
+			if(x==xx[i]){y.push(i)}
+		}
+		return y
+	},
+
+	loadMyApps:function(){ // add preload manifest.loadApps from localStore and URL call
+		if(!!wApps.parms.loadApps){ // add any in the URL call
+			wApps.manifest.loadApps = JSON.parse('["'+decodeURI(wApps.parms.loadApps).replace(/,/g,'","')+'"]');
+		}
+		if(!!localStorage.getItem('myWApps')){ // look in the localStorage
+			var localApps=JSON.parse(localStorage.getItem('myWApps'));
+			for(var i in localApps){ // add only those that are new
+				if(this.find(localApps[i],wApps.manifest.loadApps).length==0){wApps.manifest.loadApps.push(localApps[i])}
+			}
+		}
+		if(wApps.manifest.loadApps.length>0){ // if there are any to preload
+			$('#wAppsTabsA_Store').click();// go to the store
+			var appNames=[];
+			for(var i in wApps.manifest.apps)[appNames.push(wApps.manifest.apps[i].name)]
+			for(var i in wApps.manifest.loadApps){
+				if(this.find(wApps.manifest.loadApps[i],appNames).length>0){ // if it matches
+					var j = wApps.manifest.indexApps[wApps.manifest.loadApps[i]];
+					$('#wAppCheckBox_'+j).click();
+				}
+			}
+			$('#wAppsTabsA_myApps').click();
+			var i = wApps.manifest.indexApps[wApps.manifest.loadApps[0]]; // find app at the top of the list
+			$('#wAppTab_'+i+'_A').click(); // click on it
+		}
+	},
+
 	buildUI:function(id,manifest){ // the manifest could actually come from somewhere else
-		if(!manifest){manifest='manifest.js'} // but the default is local
-		this.load(manifest,function(){
+		this.getParms(); // get parms provided with URL
+		if(!manifest){
+			if(!this.parms.manifest){manifest='manifest.js'} // the default is local manifest.js
+				else{manifest=this.parms.manifest} // use manifest provided with URL
+		}
+		if(this.parms.addmanifest){manifest=[manifest,this.parms.addmanifest]} // if an addmanifest=... is specified
+		this.load(manifest,function(){ // manifest could be an Array of urls, multiple manifests adding to eachother ...
+			// add require method to each app in teh manifest
+			for(var i in wApps.manifest.apps){ // add require to each App
+    			wApps.manifest.apps[i].require=function(url,fun){
+        			if(!window[this.namespace]){wApps.load(url,fun)}else{fun()}
+				}
+			};
+			// proceed to build UI
 			wApps.doBuildUI(id);
 		})
 	},
 
 	buildStore:function(){
-		var div = wApps.manifest.bodies.Store.Div;
+		var div = wApps.manifest.tabs.Store.Div;
 		div.innerHTML=''; // clear div
 		// Add search input
 		var searchApps = $('<input type="text" placeholder="search for wApps">').appendTo(div);
@@ -91,54 +139,63 @@ wApps={
 		var appDiv=[];
 		for(var i in apps){
 			appDiv[i] = $('<div id="wApp_"'+i+'>').appendTo(div);
-			appDiv[i].html('<input type="checkbox" id="wAppCheckBox_'+i+'"> '+i+') <a href="'+wApps.manifest.apps[i].name+'">'+wApps.manifest.apps[i].name+'</a><p><i>'+wApps.manifest.apps[i].description+'</i></p>');
-			if(wApps.manifest.checkedApps[i]){$('#wAppCheckBox_'+i)[0].checked=true};
+			appDiv[i].html('<input type="checkbox" id="wAppCheckBox_'+i+'"> '+i+') <a href="'+wApps.manifest.apps[i].url+'" target=_blank>'+wApps.manifest.apps[i].name+'</a><p><i>'+wApps.manifest.apps[i].description+'</i></p>');
+			if(wApps.manifest.myApps[i]){$('#wAppCheckBox_'+i)[0].checked=true};
 			$('#wAppCheckBox_'+i).click(function(){wApps.getChecked(this)});
 		}
-		//this.load('manifest.json',function(){
-			console.log(9);
-		//})
 	},
 
 	buildApps:function(){ // build myApps container
-		var div = wApps.manifest.bodies.myApps.Div;$(div).html('');
+		var div = wApps.manifest.tabs.myApps.Div;$(div).html('');
 		var apps = wApps.manifest.apps;
 		var appNavTabs = $('<div class="tabbable tabs-left">').appendTo(div);
-		var appNavTabsUl = $('<ul class="nav nav-tabs">').appendTo(appNavTabs);
-		var appNavTabDiv = $('<div class="tab-content">').appendTo(appNavTabs);
-		wApps.manifest.appTabs=[];
-		for(var i in apps){
-			wApps.manifest.appTabs[i]={
-				tab:$('<li><a href="#wAppTab_'+i+'" data-toggle="tab">'+wApps.manifest.apps[i].name.replace(/\s/g,'<br>')+'</a></li>').appendTo(appNavTabsUl),
-				div:$('<div class="tab-pane" id="wAppTab_'+i+'">').html('loading '+wApps.manifest.apps[i].name+'...').appendTo(appNavTabDiv)
-			}
-			wApps.manifest.apps[i].buildUI('wAppTab_'+i);
+		var appNavTabsUl = $('<ul class="nav nav-tabs" id="appNavTabsUl">').appendTo(appNavTabs);
+		var appNavTabDiv = $('<div class="tab-content" id="appNavTabDiv">').appendTo(appNavTabs);
+	},
 
-		}
-
-
-		/*
-		for(var i in apps){
-			wApps.manifest.apps[i].container=$('<div class="row-fluid" id="appContainer_'+i+'">').appendTo(appContainer);
-			wApps.manifest.apps[i].head=$('<div class="span1" id="appHead_'+i+'">').appendTo(wApps.manifest.apps[i].container);
-			wApps.manifest.apps[i].body=$('<div class="span11" id="appBody_'+i+'">').appendTo(wApps.manifest.apps[i].container);
-			$(wApps.manifest.apps[i].head).html('head_'+i);
-			$(wApps.manifest.apps[i].body).html('body_'+i);
-		}
-		*/
+	getParms:function(){ // extract parameters concatenated with URL 
+		var parms = document.location.search.slice(1).split('&').map(function(s){return s.split('=')});
+		this.parms={}; // store them in wApps.parms
+		for( var i in parms){if(parms[i][0].length>0){this.parms[parms[i][0]]=parms[i][1]}};
 	},
 
 	getChecked:function(that){
-		var i = (that.id).match(/wAppCheckBox_(.+)/)[1];
-		wApps.manifest.checkedApps[i]=$(that).is(':checked');
-		console.log(wApps.manifest.checkedApps);
+		var appNavTabsUl = ('#appNavTabsUl');
+		var appNavTabDiv = ('#appNavTabDiv');
+		var i0 = (that.id).match(/wAppCheckBox_(.+)/)[1];
+		wApps.manifest.myAppsInd[i0]=$(that).is(':checked');
+		wApps.manifest.myAppsNames=[]; // updated list of checked apps
+		for(var i in wApps.manifest.myAppsInd){
+			if(wApps.manifest.myAppsInd[i]){ // only true checks here
+				wApps.manifest.myAppsNames.push(wApps.manifest.apps[i].name);
+				if(!!wApps.manifest.myApps[i]){ // if the wApp is already there, hiding, show it
+					$(wApps.manifest.myApps[i].tab).show();
+				}
+				else{ // otherwiese build it
+					wApps.manifest.myApps[i]={
+						tab:$('<li><a href="#wAppTab_'+i+'" data-toggle="tab" id="wAppTab_'+i+'_A">'+wApps.manifest.apps[i].name.replace(/\s/g,'<br>')+'</a></li>').appendTo(appNavTabsUl),
+						div:$('<div class="tab-pane" id="wAppTab_'+i+'">').html('loading '+wApps.manifest.apps[i].name+'...').appendTo(appNavTabDiv)
+					};
+					wApps.manifest.apps[i].buildUI('wAppTab_'+i); // building happens here
+				}
+			}else{ // hide tabs of wApps just checked off (they'll have "false" values)
+				$(wApps.manifest.myApps[i].tab).hide()
+			};
+		}
+		//if($(that).is(':checked')){$(wApps.manifest.myApps[i0].tab).click()}; 
+		localStorage.setItem('myWApps',JSON.stringify(wApps.manifest.myAppsNames)); // record name of myApps on local storage
+		// $('#wAppCheckBox_2').click() <--- how to click and unclick programatically
 	},
 
-	manifest:{ // these will be filled in from the manifest
+	manifest:{ // some of these will be filled in from the manifest
+		brand:{pic:'',url:''},
+		tabs:[],
 		apps:[],
 		authors:[],
-		bodies:{},
-		brand:{pic:'',url:''}
+		myApps:[], // where the list of selected apps will be recorded
+		myAppsInd:[], // for convenience, also their indexes
+		myAppsNames:[], // and names
+		loadApps:[] // prepopulation of myApps
 	}
 }
 

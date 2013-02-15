@@ -1,71 +1,17 @@
-
-wApps.manifest.apps.push(
-
-    {
-    "name": "QMachine",
-    "description": "QMachine volunteer",
-    "url": "http://v1.qmachine.org",
-    "namespace":'QM',
-    buildUI:function(id){
-        this.require('', // script needed to volunteer compute cycles to QM
-            function(){
-                $('#'+id).html("<h1>QMachine</h1>Volunteering to Sean's QMachine will go here, Sean, can you please change the manifest accordingly?");
-            });
-        }
-    },
+// This document, manifest.js, is the only file a wApps repository needs to maintain.
+// it includes four sections: 1) Branding, 2) Tabs, 3) Apps, and 4) Authors
 
 
-    {
-    "name": "Login@ S3DB.UAB",
-    "description": "<p>Very simple login into UAB's S3DB cloud deployment using jmat's toolbox.<br> The login credentials will be stored at wApps.s3db.info.",
-    "url": "https://code.google.com/p/jmat/", // home page of App
-    "namespace":'jmat',
-    buildUI:function(id){
-        this.require('https://jmat.googlecode.com/git/jmat.js',
-            function(){
-                $('<div id="'+id+'_s3dbLogin">').appendTo($('#'+id));// create login div
-                var url = 'https://uab.s3db.org/s3db'
-                jmat.s3db.UI.login(
-                    url,
-                    function(){
-                        wApps.s3db=jmat.s3db.info;
-                        console.log('s3db login successful :-)');
-                        $('<div>Logged in at '+url+': <p><smal><em>'+JSON.stringify(wApps.s3db.uid)+'</em></small></p>').appendTo($('#'+id));
-                    },
-                    id+'_s3dbLogin'
-                )
-                //console.log(id);
-            });
-        }
-    },
-
-    {
-    "name": "someWApp",
-    "description": "Some wApp one of you links here",
-    "url": "http://uab.mathbiol.org/workshop",
-    "namespace":'Some_wAapp',
-    buildUI:function(id){
-        this.require('', // script to load your code 
-            function(){
-                $('#'+id).html("<h1>Some wApp</h1>Some Application you developped and want to wApp here");
-            });
-        }
-    }
-);
-
-wApps.manifest.authors.push(
-    {
-    }
-);
-
+// 1) BRANDING - the icon and link in the upper left corner
 wApps.manifest.brand={
     pic:'brand.png',
     url:'http://en.wikipedia.org/wiki/s3db'
 };
 
-wApps.manifest.checkedApps=[];
-
-wApps.manifest.bodies={
+// 2) TABS - the navigation tabs in the head of wApps. 
+//    The code manage "myApps", "Store" and "People",
+//    the rest is up to you.
+wApps.manifest.tabs={
     "myApps":{
         html:'Apps you selected from the AppStore ...',
         Div:{} // where the DOM element will be set later 
@@ -84,31 +30,121 @@ wApps.manifest.bodies={
     }
 };
 
-
-for(var i in wApps.manifest.apps){wApps.manifest.apps[i].require=wApps.load}
-
-
-
-/*
+// 3) APPS - the description of the applications 
+wApps.manifest.apps.push(
     {
-        "name": "RPPA",
-        "description": "Real time analysis of reverse phase protein data.",
-        "url": "https://raw.github.com/agrueneberg/TCGA.rppa/master/rppa.js"
+    "name": "QMachine",
+    "description": "QMachine volunteer",
+    "url": "http://v1.qmachine.org",
+    "author":"Sean Wilkinson",
+    "namespace":'QM',
+    buildUI:function(id){
+        this.require('', // script needed to volunteer compute cycles to QM
+            function(){
+                $('#'+id).html("<p>Sean, it may make sense to have a local volunteer such that other wApps can also use qmachine: it could be used as the HPC engine :-)</p><iframe width=100% height=500 src='https://v1.qmachine.org/'/>");
+            });
+        }
     },
+
     {
-        "name": "Import",
-        "description": "Import your files and compare them to the reference data in TCGA.",
-        "url": "https://raw.github.com/agrueneberg/TCGA.import/master/import.js"
+    "name": "Login@ S3DB.UAB",
+    "description": "<p>Very simple login into UAB's S3DB cloud deployment using jmat's toolbox.<br> The login credentials will be stored at wApps.s3db.info.",
+    "url": "https://code.google.com/p/jmat/", // home page of App
+    "author":"Jonas Almeida",
+    "namespace":'jmat',
+    buildUI:function(id){
+        this.require('https://jmat.googlecode.com/git/jmat.js', //'http://localhost:8888/jmat/jmat.js',
+            function(){jmat.s3db.UI.wApp(id,'https://uab.s3db.org/s3db')}
+            );
+        }
     },
+
     {
-        "name": "Dropbox",
-        "description": "Access your Dropbox and load files into the TCGA Toolbox.",
-        "url": "https://raw.github.com/agrueneberg/TCGA.dropbox/master/dropbox.js"
+    "name": "TCGA toolbox",
+    "description": "VAlex's TCGA Toolbox in a iframe",
+    "url": "https://code.google.com/p/jmat/", // home page of App
+    "author":"Alexander Gruneberg",
+    "namespace":'TCGA',
+    buildUI:function(id){
+        this.require('', // script needed to volunteer compute cycles to QM
+            function(){
+                $('#'+id).html('<p>Unlike QMachine, it may make sense to keep this one in a iframe</p><iframe width=100% height=800 src="http://tcga.github.com" seamless="seamless" />');
+            });
+        }
     },
+
     {
-        "name": "Databases",
-        "description": "Activate third-party databases for use with the TCGA Toolbox.",
-        "url": "https://raw.github.com/agrueneberg/TCGA.databases/master/databases.js"
+    "name": "Kinomics toolbox",
+    "description": "Kinomics toolbox under development",
+    "url": "http://adussaq.github.com/kinomicDataQC/",
+    "author":"Alex Dussaq",
+    "namespace":'QM',
+    buildUI:function(id){
+        this.require('', // script needed to volunteer compute cycles to QM
+            function(){
+                $('#'+id).html("<p>Unlike QMachine, it may make sense to keep this one in a iframe</p><iframe width=100% height=500 src='http://adussaq.github.com/kinomicDataQC'/>");
+            });
+        }
+    },
+
+    {
+    "name": "ET callHome",
+    "description": "a little coding on the manifest can go a long way.",
+    "url": "https://code.google.com/p/jmat/", // home page of App
+    "author":"Jonas Almeida",
+    "namespace":'jmat',
+    buildUI:function(id){
+        this.require('https://jmat.googlecode.com/git/jmat.js', //'http://localhost:8888/jmat/jmat.js',
+            function(){
+                var t = setInterval(
+                    function(){jmat.plot(id,jmat.rand(100),jmat.rand(100))},
+                    5000
+                );
+            }
+        )}
+    },
+
+    {
+    "name": "someWApp",
+    "description": "Some wApp one of you links here",
+    "url": "http://uab.mathbiol.org/workshop",
+    "namespace":'Some_wAapp',
+    buildUI:function(id){
+        this.require('', // script to load your code 
+            function(){
+                $('#'+id).html("<h1>Some wApp</h1>Some Application you developped and want to wApp here");
+            });
+        }
     }
-)
-*/
+);
+
+// 4) AUTHORS - description of the authors, matching the names in the Apps,
+//              where they can be described as a string or, when there is
+//              a team of authors, as an Array of strings .
+wApps.manifest.authors.push(
+    {
+    "name":"Jonas Almeida",
+    "url":"http://jonasalmeida.info"
+    },
+
+    {
+    "name":"David Robbins",
+    "url":"https://sites.google.com/a/mathbiol.org/robbinsd/"
+    },
+
+    {
+    "name":"Sean Wilkinson",
+    "url":"mailto:wilkinson@uab.edu"
+    },
+
+    {
+    "name":"Alexander Gruneberg",
+    "url":"https://sites.google.com/a/mathbiol.org/agrueneberg/"
+    },
+
+    {
+    "name":"Alex Dussaq",
+    "url":"mailto:adussaq@uab.edu"
+    }
+);
+
