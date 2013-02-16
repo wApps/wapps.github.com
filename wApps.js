@@ -106,6 +106,7 @@ wApps={
 			$('#wAppsTabsA_myApps').click();
 			var i = wApps.manifest.indexApps[wApps.manifest.loadApps[0]]; // find app at the top of the list
 			$('#wAppTab_'+i+'_A').click(); // click on it
+			localStorage.setItem('myWApps',JSON.stringify(wApps.manifest.loadApps)); // store new order
 		}
 	},
 

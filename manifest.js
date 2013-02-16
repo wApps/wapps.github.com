@@ -88,6 +88,20 @@ wApps.manifest.apps.push(
     },
 
     {
+    "name": "MinervaJS",
+    "description": "Weaving JavaScript modules like a goddess",
+    "url": "http://minervajs.org/",
+    "author":"David Robbins",
+    "namespace":'minerva',
+    buildUI:function(id){
+        this.require('', // script needed to volunteer compute cycles to QM
+            function(){
+                $('#'+id).html("<p>I really like the user management and social networking via DISCUS here</p><iframe width=100% height=500 seamless='seamless' src='http://minervajs.org'/>");
+            });
+        }
+    },
+
+    {
     "name": "ET callHome",
     "description": "a little coding on the manifest can go a long way.",
     "url": "https://code.google.com/p/jmat/", // home page of App
