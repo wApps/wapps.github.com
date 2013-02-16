@@ -140,7 +140,7 @@ wApps={
 		var appDiv=[];
 		for(var i in apps){
 			appDiv[i] = $('<div id="wApp_"'+i+'>').appendTo(div);
-			appDiv[i].html('<input type="checkbox" id="wAppCheckBox_'+i+'"> '+i+') <a href="'+wApps.manifest.apps[i].url+'" target=_blank>'+wApps.manifest.apps[i].name+'</a><p><i>'+wApps.manifest.apps[i].description+'</i></p>');
+			appDiv[i].html('<input type="checkbox" id="wAppCheckBox_'+i+'"> '+i+') <a href="'+wApps.manifest.apps[i].url+'" target=_blank>'+wApps.manifest.apps[i].name+'</a> [<a href="disqus.html?'+wApps.manifest.apps[i].name+'" target=_blank><image src="disqus-logo.png" width=40></a>]<p><i>'+wApps.manifest.apps[i].description+'</i></p>');
 			if(wApps.manifest.myApps[i]){$('#wAppCheckBox_'+i)[0].checked=true};
 			$('#wAppCheckBox_'+i).click(function(){wApps.getChecked(this)});
 		}
