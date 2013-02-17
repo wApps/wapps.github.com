@@ -72,7 +72,7 @@ wApps={
 			}
 		}
 		// Assemble Footer
-		var foot = $('<div id="wAppFoot"><hr><small><i>&nbsp;@ <a href="https://github.com/wApps/wapps.github.com" target=_blank>wApps</a>: <span id="wAppsFooter"></i></span></small></div>').appendTo(container);
+		var foot = $('<div id="wAppFoot"><hr><small><i>&nbsp;@ <a href="https://github.com/wApps/manifest#wapps-all-you-need-is-a-manifest" target=_blank>wApps</a>: <span id="wAppsFooter"></i></span></small></div>').appendTo(container);
 		setInterval(function(){$('#wAppsFooter').html(Date())},1000);
 		console.log(buildTarget)
 		// build app Store
@@ -183,7 +183,6 @@ wApps={
 					$('#wAppCheckBox_'+this.i).focus();
 				});
 			}
-
 		}
 	},
 
