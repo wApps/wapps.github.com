@@ -31,7 +31,14 @@ wApps={
 		console.log('buildUI');
 		// Index Apps
 		wApps.manifest.indexApps={};
-		for(var i in wApps.manifest.apps){wApps.manifest.indexApps[wApps.manifest.apps[i].name]=i};
+		for(var i in wApps.manifest.apps){wApps.manifest.indexApps[wApps.manifest.apps[i].name]=i}; // index Apps
+		wApps.manifest.indexAuthors={};
+		for(var i in wApps.manifest.authors){wApps.manifest.indexAuthors[wApps.manifest.authors[i].name]=i}; // index Authors
+		wApps.manifest.indexAppsAuthors={};
+		for(var i in wApps.manifest.apps){ // index apps to authors
+			if(!wApps.manifest.indexAppsAuthors[wApps.manifest.apps[i].author]){wApps.manifest.indexAppsAuthors[wApps.manifest.apps[i].author]=[]}
+			wApps.manifest.indexAppsAuthors[wApps.manifest.apps[i].author].push(i);
+		}; // index apps to Authors
 		// Find UI build target
 		var buildTarget; // DOM element where to build UI 
 		if(!id){buildTarget=$(document.body)} // if no target is provided then use the document.body
@@ -72,6 +79,7 @@ wApps={
 		wApps.buildStore();
 		wApps.buildApps();
 		wApps.loadMyApps();
+		wApps.buildPeople();
 		//$('#wAppsTabsA_Store').click(wApps.buildStore)
 	},
 
@@ -124,6 +132,13 @@ wApps={
         			if(!window[this.namespace]){wApps.load(url,fun)}else{fun()}
 				}
 			};
+			// sort apps alphabetically
+			wApps.manifest.apps.sort(function(a,b){return a.name>b.name});
+			// sort authors by last name
+			for(var i in wApps.manifest.authors){ // first extract last name
+				wApps.manifest.authors[i].lastName=wApps.manifest.authors[i].name.match(/[^\s]+$/)[0];
+			}
+			wApps.manifest.authors.sort(function(a,b){return a.lastName>b.lastName}); // then sort it
 			// proceed to build UI
 			wApps.doBuildUI(id);
 		})
@@ -140,7 +155,7 @@ wApps={
 		var appDiv=[];
 		for(var i in apps){
 			appDiv[i] = $('<div id="wApp_"'+i+'>').appendTo(div);
-			appDiv[i].html('<input type="checkbox" id="wAppCheckBox_'+i+'"> '+i+') <a href="'+wApps.manifest.apps[i].url+'" target=_blank>'+wApps.manifest.apps[i].name+'</a> [<a href="disqus.html?'+wApps.manifest.apps[i].name+'" target=_blank><image src="disqus-logo.png" width=40></a>]<p><i>'+wApps.manifest.apps[i].description+'</i></p>');
+			appDiv[i].html('<input type="checkbox" id="wAppCheckBox_'+i+'"> '+i+') <a href="'+wApps.manifest.apps[i].url+'" target=_blank>'+wApps.manifest.apps[i].name+'</a>,<small> by <i><a href="'+wApps.manifest.authors[wApps.manifest.indexAuthors[wApps.manifest.apps[i].author]].url+'">'+wApps.manifest.apps[i].author+'</a></i> [<a href="disqus.html?'+wApps.manifest.apps[i].name+'" target=_blank><image src="disqus-logo.png" width=40></a>]</small><p><i>'+wApps.manifest.apps[i].description+'</i></p>');
 			if(wApps.manifest.myApps[i]){$('#wAppCheckBox_'+i)[0].checked=true};
 			$('#wAppCheckBox_'+i).click(function(){wApps.getChecked(this)});
 		}
@@ -152,6 +167,18 @@ wApps={
 		var appNavTabs = $('<div class="tabbable tabs-left">').appendTo(div);
 		var appNavTabsUl = $('<ul class="nav nav-tabs" id="appNavTabsUl">').appendTo(appNavTabs);
 		var appNavTabDiv = $('<div class="tab-content" id="appNavTabDiv">').appendTo(appNavTabs);
+	},
+
+	buildPeople:function(){
+		var div = wApps.manifest.tabs.People.Div;
+		var ul = $('<ul>').appendTo(div);
+		for (var i in wApps.manifest.authors){
+			var ai = $('<li id="wAppAuthor_'+i+'"><a href="'+wApps.manifest.authors[i].url+'">'+wApps.manifest.authors[i].name+'</a>: </li>').appendTo(div);
+			for (var j in wApps.manifest.indexAppsAuthors[wApps.manifest.authors[i].name]){
+				var ji = wApps.manifest.indexAppsAuthors[wApps.manifest.authors[i].name][j];
+				$('<span><small> [ '+wApps.manifest.apps[ji].name+' ] </small></span>').appendTo(ai);
+			}
+		}
 	},
 
 	getParms:function(){ // extract parameters concatenated with URL 

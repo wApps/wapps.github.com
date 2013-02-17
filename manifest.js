@@ -122,6 +122,7 @@ wApps.manifest.apps.push(
     "name": "someWApp",
     "description": "Some wApp one of you links here",
     "url": "http://uab.mathbiol.org/workshop",
+    "author":"Some Author",
     "namespace":'Some_wAapp',
     buildUI:function(id){
         this.require('', // script to load your code 
@@ -159,6 +160,11 @@ wApps.manifest.authors.push(
     {
     "name":"Alex Dussaq",
     "url":"mailto:adussaq@uab.edu"
+    },
+
+    {
+    "name":"Some Author",
+    "url":"http://someUrl.com"
     }
 );
 
