@@ -154,8 +154,8 @@ wApps={
 		var apps = wApps.manifest.apps;
 		var appDiv=[];
 		for(var i in apps){
-			appDiv[i] = $('<div id="wApp_"'+i+'>').appendTo(div);
-			appDiv[i].html('<input type="checkbox" id="wAppCheckBox_'+i+'"> '+i+') <a href="'+wApps.manifest.apps[i].url+'" target=_blank>'+wApps.manifest.apps[i].name+'</a>,<small> by <i><a href="'+wApps.manifest.authors[wApps.manifest.indexAuthors[wApps.manifest.apps[i].author]].url+'">'+wApps.manifest.apps[i].author+'</a></i> [<a href="disqus.html?'+wApps.manifest.apps[i].name+'" target=_blank><image src="disqus-logo.png" width=40></a>]</small><p><i>'+wApps.manifest.apps[i].description+'</i></p>');
+			appDiv[i] = $('<div id="wApp_'+i+'">').appendTo(div);
+			appDiv[i].html('<input type="checkbox" id="wAppCheckBox_'+i+'"> '+i+') <a href="'+wApps.manifest.apps[i].url+'" target=_blank>'+wApps.manifest.apps[i].name+'</a>,<small> by <i><a href="'+wApps.manifest.authors[wApps.manifest.indexAuthors[wApps.manifest.apps[i].author]].url+'" target=_blank>'+wApps.manifest.apps[i].author+'</a></i> [<a href="disqus.html?'+wApps.manifest.apps[i].name+'" target=_blank><image src="disqus-logo.png" width=40></a>]</small><p><i>'+wApps.manifest.apps[i].description+'</i></p>');
 			if(wApps.manifest.myApps[i]){$('#wAppCheckBox_'+i)[0].checked=true};
 			$('#wAppCheckBox_'+i).click(function(){wApps.getChecked(this)});
 		}
@@ -173,11 +173,17 @@ wApps={
 		var div = wApps.manifest.tabs.People.Div;
 		var ul = $('<ul>').appendTo(div);
 		for (var i in wApps.manifest.authors){
-			var ai = $('<li id="wAppAuthor_'+i+'"><a href="'+wApps.manifest.authors[i].url+'">'+wApps.manifest.authors[i].name+'</a>: </li>').appendTo(div);
+			var ai = $('<li id="wAppAuthor_'+i+'"><a href="'+wApps.manifest.authors[i].url+'" target=_blank>'+wApps.manifest.authors[i].name+'</a>: </li>').appendTo(div);
 			for (var j in wApps.manifest.indexAppsAuthors[wApps.manifest.authors[i].name]){
 				var ji = wApps.manifest.indexAppsAuthors[wApps.manifest.authors[i].name][j];
-				$('<span><small> [ '+wApps.manifest.apps[ji].name+' ] </small></span>').appendTo(ai);
+				$('<span><small> [ <a href="#" id="wAppPeopleApp_'+i+'_'+j+'">'+wApps.manifest.apps[ji].name+'</a> ] </small></span>').appendTo(ai);
+				$('#wAppPeopleApp_'+i+'_'+j)[0].i=ji;
+				$('#wAppPeopleApp_'+i+'_'+j).click(function(){
+					$('#wAppsTabsA_Store').click();
+					$('#wAppCheckBox_'+this.i).focus();
+				});
 			}
+
 		}
 	},
 

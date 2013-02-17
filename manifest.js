@@ -110,10 +110,10 @@ wApps.manifest.apps.push(
     buildUI:function(id){
         this.require('https://jmat.googlecode.com/git/jmat.js', //'http://localhost:8888/jmat/jmat.js',
             function(){
-                var t = setInterval(
-                    function(){jmat.plot(id,jmat.rand(100),jmat.rand(100))},
-                    5000
-                );
+                $('<div id="plotHere">').appendTo($('#'+id).html(''));
+                jmat.plot("plotHere",jmat.rand(100),jmat.rand(100));
+                var bt = $('<button>').html('call home').appendTo($('#'+id));
+                bt.click(function(){jmat.plot("plotHere",jmat.rand(100),jmat.rand(100))});      
             }
         )}
     },
