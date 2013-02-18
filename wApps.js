@@ -121,7 +121,7 @@ wApps={
 	buildUI:function(id,manifest){ // the manifest could actually come from somewhere else
 		this.getParms(); // get parms provided with URL
 		if(!manifest){
-			if(!this.parms.manifest){manifest='manifest.js'} // the default is local manifest.js
+			if(!this.parms.manifest){manifest='https://raw.github.com/wApps/manifest/master/manifest.js'} // the default is local manifest.js
 				else{manifest=this.parms.manifest} // use manifest provided with URL
 		}
 		if(this.parms.addmanifest){manifest=[manifest,this.parms.addmanifest]} // if an addmanifest=... is specified
